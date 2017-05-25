@@ -1,0 +1,41 @@
+CREATE TABLE Numbers
+(
+    Base_Value INTEGER NOT NULL,
+    Result_Value VARCHAR2(200) 
+);
+
+CREATE SEQUENCE Numbers_Sequence START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER Number_Trigger BEFORE INSERT ON Numbers FOR EACH ROW
+BEGIN
+  Insert Into Numbers(Result_Value)  SELECT findSum(Base_Value) 
+  FROM Numbers
+  Where Base_Value = :new.Base_Value;
+END;
+
+CREATE OR REPLACE TRIGGER Number_Trigger BEFORE INSERT ON Numbers FOR EACH ROW
+BEGIN
+  Insert Into Numbers(Result_Value) SELECT findSum(:new.Base_Value) 
+  FROM Numbers
+  Where Base_Value = :new.Base_Value;
+END;
+
+
+CREATE OR REPLACE FUNCTION findSum(x IN number)
+RETURN VARCHAR2 IS
+   y VARCHAR2(200);
+   modSum integer := 0;
+   j integer:= 0;
+BEGIN
+  FOR j IN 1..x LOOP
+     -- mod3 := Mod(i,3);
+      If (Mod(j,3)=0) THEN
+        modSum := j + modSum;
+      End If;
+     If (MOD(j,5)=0) THEN
+        modSum := j + modSum;
+     End If;
+  END LOOP;
+    y := TO_CHAR(modSum);
+  RETURN y;
+END;
